@@ -1,5 +1,5 @@
 # Implementation-A-highly-efficient-and-reliable-heart-rate-monitoring-system-using-smartphone-cameras
-An implementation of paper entitled "A highly efficient and reliable heart rate monitoring system using smartphone cameras"
+An implementation of paper entitled "A highly efficient and reliable heart rate monitoring system using smartphone cameras". This is an implentation for a project. Not verified by the authors of the paper. 
 
 # How to Run 
       1. In the "directory_prefix" variable give the directory where the frames are, numbered as 'frame0.jpg', 'frame1.jpg'  .... etc. 
