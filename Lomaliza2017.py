@@ -67,11 +67,11 @@ class Lomaliza2017:
         f.close()
         return ppg_points_b
 
-    def PeakBasedPPGCalculation(self, ppg_points_b, window_length,sampling_freq):
+    def PeakBasedPPGCalculation(self, ppg_points_r, window_length,sampling_freq):
         min_points = floor(window_length*sampling_freq)
         temp = []
-        for i in range(0,len(ppg_points_b),min_points):
-            l = ppg_points_b[i:min(i+min_points,len(ppg_points_b))]
+        for i in range(0,len(ppg_points_r),min_points):
+            l = ppg_points_r[i:min(i+min_points,len(ppg_points_r))]
             ppg = np.array(l)
             peaks = argrelextrema(ppg, np.greater)
             # print(peaks)
@@ -79,7 +79,7 @@ class Lomaliza2017:
             peak_values = []
             for j in range(0,len(peaks)):
                 idx = peaks[j]+i
-                peak_values.append(ppg_points_b[idx])
+                peak_values.append(ppg_points_r[idx])
 
 
             # print(peak_values)
@@ -89,7 +89,7 @@ class Lomaliza2017:
             valley_values = []
             for j in range(0,len(valleys)):
                 idx = valleys[j]+i
-                valley_values.append(ppg_points_b[idx])
+                valley_values.append(ppg_points_r[idx])
 
             peak_avg = None
             if(len(peak_values)>0):
@@ -99,21 +99,21 @@ class Lomaliza2017:
                 valley_avg = self.CalculateMean(valley_values)
             if(peak_avg != None and valley_avg != None):
                 mid_point = (peak_avg+valley_avg)/2.0
-                for j in range(i,min(i+min_points,len(ppg_points_b))):
-                    if(ppg_points_b[j] > mid_point):
+                for j in range(i,min(i+min_points,len(ppg_points_r))):
+                    if(ppg_points_r[j] > mid_point):
                         temp.append(j)
             else:
                 if(len(peak_values) == 0):
                     max_val = 0
                     max_idx = -1
-                    for j in range(i,min(i+min_points,len(ppg_points_b))):
-                        if(max_val<ppg_points_b[j]):
+                    for j in range(i,min(i+min_points,len(ppg_points_r))):
+                        if(max_val<ppg_points_r[j]):
                             max_val = ppg_points_b[j]
                             max_idx = j
                     temp.append(max_idx)
                 else:
-                    for j in range(i,min(i+min_points,len(ppg_points_b))):
-                        if(len(peak_values)>0 and ppg_points_b[j] == peak_values[0]):
+                    for j in range(i,min(i+min_points,len(ppg_points_r))):
+                        if(len(peak_values)>0 and ppg_points_r[j] == peak_values[0]):
                             temp.append(j)
                             break
         beat_points = []
@@ -122,7 +122,7 @@ class Lomaliza2017:
                 beat_points.append(temp[i])
             else:
                 if((temp[i] - beat_points[len(beat_points)-1]) == 1):
-                    if(ppg_points_b[beat_points[len(beat_points)-1]] < ppg_points_b[temp[i]]):
+                    if(ppg_points_r[beat_points[len(beat_points)-1]] < ppg_points_r[temp[i]]):
                         beat_points[len(beat_points)-1] = temp[i]
                 else:
                     beat_points.append(temp[i])
@@ -157,21 +157,21 @@ class Lomaliza2017:
             print("S got empty")
 
     def GetThePPGPoints(self,file_name):
-        ppg_points_b = []
+        ppg_points_r = []
         with open(file_name,'r') as file:
             lines = file.readlines()
             for i in range(1,len(lines)):
                 l = lines[i].strip().split(',')[1]
-                ppg_points_b.append(float(l))
-        return ppg_points_b
+                ppg_points_r.append(float(l))
+        return ppg_points_r
 
 object = Lomaliza2017()
 
 directory_prefix = 'E:\Research\Smartphone-heart-beat\Dataset\Red-Object-Detection\Heart-Rate-Measure\heart-rate-measure\Paper-Clean-Data' # all the frames should be in this folder
 number_of_frames =  900 # ('frame0.jpg, frame1.jpg, frame2.jpg, etc.')
 output_file = 'Results.csv'
-ppg_points_b = object.AllFrameCalculation(directory_prefix, number_of_frames, output_file) # PPG intensity will be stored in output_file
-#ppg_points_b = object.GetThePPGPoints('E:\Research\Smartphone-heart-beat\Dataset\Red-Object-Detection\Heart-Rate-Measure\heart-rate-measure\Paper-Clean-Data\\red-pixels.csv') # give the PPG intesity file's path
+ppg_points_r = object.AllFrameCalculation(directory_prefix, number_of_frames, output_file) # PPG intensity will be stored in output_file
+#ppg_points_r = object.GetThePPGPoints('E:\Research\Smartphone-heart-beat\Dataset\Red-Object-Detection\Heart-Rate-Measure\heart-rate-measure\Paper-Clean-Data\\red-pixels.csv') # give the PPG intesity file's path
 window_length = 2.5
 sampling_freq = 30
-object.PeakBasedPPGCalculation(ppg_points_b,window_length,sampling_freq)
+object.PeakBasedPPGCalculation(ppg_points_r,window_length,sampling_freq)
